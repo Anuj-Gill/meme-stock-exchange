@@ -1,3 +1,3 @@
 export const apiIdentifiers = {
-  auth_api: 'auth-api',
+  oauth_register: "oauth/register"
 } as const;

@@ -6,6 +6,6 @@ export class AppService {
   constructor(private readonly configService: ConfigService) {}
 
   getHealthStatus(): string {
-    return `Server is running, ${this.configService.get<string>('SUPABASE_URL')}`;
+    return `Server is running`;
   }
 }

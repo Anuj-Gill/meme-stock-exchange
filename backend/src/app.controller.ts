@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service';
+import * as Sentry from "@sentry/nestjs"
 
 @Controller()
 export class AppController {
@@ -9,4 +10,5 @@ export class AppController {
   getHealthStatus(): string {
     return this.appService.getHealthStatus();
   }
+  
 }

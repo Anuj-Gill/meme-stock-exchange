@@ -1,30 +1,29 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
-import { EnvironmentVariables } from "src/common/env.vars";
-
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { EnvironmentVariables } from 'src/common/env.vars';
 
 @Injectable()
 export class SupabaseService {
   constructor(
-    private readonly configService: ConfigService<EnvironmentVariables, true>
-  ){}
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
+  ) {}
 
   private createAdminClient(options?: Parameters<typeof createClient>[2]) {
     return createClient(
-    this.configService.get<string>('SUPABASE_URL'),
-    this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY'),
-    options
-    )
+      this.configService.get<string>('SUPABASE_URL'),
+      this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY'),
+      options,
+    );
   }
 
   private createUserClient(
     userJWT: string,
-    options?: Parameters<typeof createClient>[2]
+    options?: Parameters<typeof createClient>[2],
   ) {
     return createClient(
       this.configService.get<string>('SUPABASE_URL'),
-      this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY'),
+      this.configService.get<string>('SUPABASE_ANON_KEY'),
       {
         ...options,
         global: {
@@ -34,7 +33,8 @@ export class SupabaseService {
             Authorization: `Bearer ${userJWT}`,
           },
         },
-      }
-    )
+      },
+    );
   }
+
 }

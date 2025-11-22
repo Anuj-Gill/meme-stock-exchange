@@ -4,10 +4,10 @@
   "private": true,
   "workspaces": [
     "backend",
-    "broker"
+    "dashboard"
   ],
   "repository": "https://github.com/Anuj-Gill/meme-stock-exchange.git",
   "scripts": {
-    "broker:dev": "yarn workspace @meme-stock-exchange/broker"
+    "dashboard:dev": "yarn workspace @meme-stock-exchange/dashboard run dev"
   }
 }
