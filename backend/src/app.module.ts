@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from './services/prisma.service';
 import { OrderController } from './apis/order/order.controller';
 import { OrderService } from './apis/order/order.service';
+import { BrokerService } from './services/broker.service';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { OrderService } from './apis/order/order.service';
     OAuthService,
     JwtService,
     PrismaService,
-    OrderService
+    OrderService,
+    BrokerService
   ],
 })
 export class AppModule {}
