@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { OAuthController } from './apis/oauth/oauth.controller';
 import { OAuthService } from './apis/oauth/oauth.service';
@@ -13,6 +14,8 @@ import { PrismaService } from './services/prisma.service';
 import { OrderController } from './apis/order/order.controller';
 import { OrderService } from './apis/order/order.service';
 import { BrokerService } from './services/broker.service';
+import { MarketDataController } from './apis/market-data/market-data.controller';
+import { BotOrderController } from './apis/bot-order/bot-order.controller';
 
 @Module({
   imports: [
@@ -21,8 +24,9 @@ import { BrokerService } from './services/broker.service';
       isGlobal: true,
       cache: true,
     }),
+    EventEmitterModule.forRoot(),
   ],
-  controllers: [AppController, OAuthController, OrderController],
+  controllers: [AppController, OAuthController, OrderController, MarketDataController, BotOrderController],
   providers: [
     {
       provide: APP_FILTER,

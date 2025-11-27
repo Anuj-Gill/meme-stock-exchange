@@ -83,3 +83,40 @@ export class JWTGuard implements CanActivate {
     return request.cookies?.access_token;
   }
 }
+
+@Injectable()
+export class ApiKeyGuard implements CanActivate {
+  constructor(
+    private readonly configService: ConfigService<EnvironmentVariables>,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const apiKey = this.extractApiKeyFromHeader(request);
+
+    if (!apiKey) {
+      throw new UnauthorizedException('API key is required');
+    }
+
+    const validApiKey = this.configService.get<string>('BOT_API_KEY');
+
+    if (apiKey !== validApiKey) {
+      throw new UnauthorizedException('Invalid API key');
+    }
+
+    // Extract user ID from header and attach to request
+    const userId = request.headers['x-user-id'] as string;
+    if (!userId) {
+      throw new UnauthorizedException('x-user-id header is required');
+    }
+
+    request['userId'] = userId;
+
+    return true;
+  }
+
+  private extractApiKeyFromHeader(request: Request): string | undefined {
+    const apiKey = request.headers['x-api-key'] as string;
+    return apiKey;
+  }
+}

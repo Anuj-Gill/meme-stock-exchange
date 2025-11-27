@@ -8,5 +8,6 @@ export interface EnvironmentVariables {
   SUPABASE_JWT_SECRET: string;
   CLIENT_URL: string;
   SENTRY_DSN: string;
-  BACKEND_URL: string
+  BACKEND_URL: string;
+  BOT_API_KEY: string
 }
