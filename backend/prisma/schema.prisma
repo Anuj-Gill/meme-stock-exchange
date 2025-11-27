@@ -22,13 +22,14 @@ model User {
     email         String    @unique
     image         String?
     gender        Gender?
-    refreshToken  String @map("refresh_token")
+    refreshToken  String    @map("refresh_token")
     createdAt     DateTime  @default(now()) @map("created_at")
-    updatedAt     DateTime  @updatedAt @map("updated_at")
+    updatedAt     DateTime  @updatedAt @default(now()) @map("updated_at")
     isDeleted     Boolean?  @default(false) @map("is_deleted")
-    provider      String
+    provider      Provider
     avatarUrl     String?   @map("avatar_url")
-
+    walletBalance Int       @map("wallet_balance")
+    
     @@map("users")
 }
 
@@ -36,6 +37,11 @@ enum Gender {
   male
   female
   other
+}
+
+enum Provider {
+  system
+  google
 }
 
 model Order {
@@ -49,7 +55,7 @@ model Order {
   remainingQuantity Int @map("remaining_quantity")
   status          OrderStatus @default(open)
   createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  updatedAt       DateTime  @updatedAt @default(now()) @map("updated_at")
 
   @@map("orders")
   @@index([symbol])
@@ -81,7 +87,7 @@ model Trade {
   price        Int
   quantity     Int
   createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  updatedAt    DateTime @updatedAt @default(now()) @map("updated_at")
 
   @@map("trades")
   @@index([symbol])
@@ -94,5 +100,15 @@ model Symbol {
   symbol       String   @unique
   lastTradePrice Int    @map("last_trade_price")
   createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  updatedAt    DateTime  @updatedAt @default(now()) @map("updated_at")
+
+  @@map("symbols")
+}
+
+model Holdings {
+  id           String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId       String   @db.Uuid @map("user_id")
+  symbolId     String   @db.Uuid @map("symbol_id")
+  quantity     Int 
+  avgPrice     Int 
 }

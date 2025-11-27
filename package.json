@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "backend",
-    "dashboard"
+    "dashboard",
+    "trading-bots"
   ],
   "repository": "https://github.com/Anuj-Gill/meme-stock-exchange.git",
   "scripts": {

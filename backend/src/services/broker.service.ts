@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Side, OrderType, OrderStatus } from '@prisma/client';
 import { symbols } from 'src/common/symbols.config';
 import { PrismaService } from './prisma.service';
@@ -142,7 +143,10 @@ export class BrokerService implements OnModuleInit {
   private readonly logger = new Logger(BrokerService.name);
   private orderBooks: Map<string, OrderBook> = new Map();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async onModuleInit() {
     this.logger.log(
@@ -346,6 +350,16 @@ export class BrokerService implements OnModuleInit {
         `Updated last trade price for ${order.symbol}: ${priceToCompare}`,
       );
 
+      // Emit SSE event for price update
+      const eventPayload = {
+        symbol: order.symbol,
+        price: priceToCompare,
+        quantity: matchedQty,
+        timestamp: Date.now(),
+      };
+      this.logger.log(`🚀 Emitting price.update event: ${JSON.stringify(eventPayload)}`);
+      this.eventEmitter.emit('price.update', eventPayload);
+
       order.remainingQuantity -= matchedQty;
       restingOrder.remainingQuantity -= matchedQty;
 
@@ -463,6 +477,16 @@ export class BrokerService implements OnModuleInit {
       this.logger.log(
         `Updated last trade price for ${order.symbol}: ${targetPrice}`,
       );
+
+      // Emit SSE event for price update
+      const eventPayload = {
+        symbol: order.symbol,
+        price: targetPrice,
+        quantity: matchedQty,
+        timestamp: Date.now(),
+      };
+      this.logger.log(`🚀 Emitting price.update event: ${JSON.stringify(eventPayload)}`);
+      this.eventEmitter.emit('price.update', eventPayload);
 
       order.remainingQuantity -= matchedQty;
       restingOrder.remainingQuantity -= matchedQty;
