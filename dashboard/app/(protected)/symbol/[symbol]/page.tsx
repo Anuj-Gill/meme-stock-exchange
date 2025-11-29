@@ -21,6 +21,15 @@ import {
   Briefcase
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { STOCK_IMAGES, type Symbol } from '@/lib/constants';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Area, AreaChart } from 'recharts';
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 
 interface PricePoint {
   time: number;
@@ -70,7 +79,7 @@ export default function SymbolPage({ params }: { params: Promise<{ symbol: strin
       setPriceHistory((prev) => [
         ...prev,
         { time: lastUpdate.timestamp, price: lastUpdate.price }
-      ].slice(-50));
+      ]); // Keep all points - chart will auto-scale
     }
   }, [lastUpdate, symbol]);
 
@@ -159,7 +168,7 @@ export default function SymbolPage({ params }: { params: Promise<{ symbol: strin
     : 0;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 mt-24">
       {/* Back Link */}
       <Link 
         href="/dashboard" 
@@ -171,12 +180,26 @@ export default function SymbolPage({ params }: { params: Promise<{ symbol: strin
 
       {/* Symbol Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-4xl font-bold">{symbol}</h1>
-          <Badge variant="outline" className={isConnected ? 'text-green-500 border-green-500' : 'text-yellow-500 border-yellow-500'}>
-            <span className={`w-2 h-2 rounded-full mr-1 ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`} />
-            {isConnected ? 'Live' : 'Connecting...'}
-          </Badge>
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-orange-500/20 to-amber-500/10 ring-2 ring-orange-500/30">
+            <Image
+              src={STOCK_IMAGES[symbol as Symbol]}
+              alt={symbol}
+              width={56}
+              height={56}
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-4xl font-bold">{symbol}</h1>
+              <Badge variant="outline" className={isConnected ? 'text-green-500 border-green-500' : 'text-yellow-500 border-yellow-500'}>
+                <span className={`w-2 h-2 rounded-full mr-1 ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`} />
+                {isConnected ? 'Live' : 'Connecting...'}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-500">Meme Stock</p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-3xl font-bold">${formatPrice(currentPrice)}</div>
@@ -186,61 +209,110 @@ export default function SymbolPage({ params }: { params: Promise<{ symbol: strin
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Price Chart */}
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Live Price Chart
-            </CardTitle>
-            <CardDescription>Real-time price updates</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 relative">
-              {priceHistory.length === 0 ? (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                  <Activity className="h-6 w-6 mr-2 animate-pulse" />
-                  Waiting for price updates...
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Live Price Chart
+                </CardTitle>
+                <CardDescription>Real-time price updates • {priceHistory.length} data points</CardDescription>
+              </div>
+              {priceHistory.length > 0 && (
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">Current</div>
+                  <div className="text-2xl font-bold">${formatPrice(currentPrice)}</div>
                 </div>
-              ) : (
-                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  {(() => {
-                    const maxPrice = Math.max(...priceHistory.map(p => p.price));
-                    const minPrice = Math.min(...priceHistory.map(p => p.price));
-                    const range = maxPrice - minPrice || 1;
-                    
-                    const points = priceHistory.map((point, idx) => {
-                      const x = (idx / (priceHistory.length - 1)) * 100;
-                      const y = 100 - ((point.price - minPrice) / range) * 100;
-                      return `${x},${y}`;
-                    }).join(' ');
-
-                    const areaPath = `M 0,100 L ${priceHistory.map((point, idx) => {
-                      const x = (idx / (priceHistory.length - 1)) * 100;
-                      const y = 100 - ((point.price - minPrice) / range) * 100;
-                      return `${x},${y}`;
-                    }).join(' L ')} L 100,100 Z`;
-
-                    return (
-                      <>
-                        <defs>
-                          <linearGradient id="priceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.05" />
-                          </linearGradient>
-                        </defs>
-                        <path d={areaPath} fill="url(#priceGradient)" />
-                        <polyline
-                          points={points}
-                          fill="none"
-                          stroke="#3b82f6"
-                          strokeWidth="0.5"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </>
-                    );
-                  })()}
-                </svg>
               )}
             </div>
+          </CardHeader>
+          <CardContent className="pb-6">
+            {priceHistory.length === 0 ? (
+              <div className="h-[280px] flex items-center justify-center text-muted-foreground border border-border rounded-lg">
+                <div className="text-center space-y-2">
+                  <Activity className="h-12 w-12 mx-auto animate-pulse text-orange-500" />
+                  <p className="text-sm">Waiting for price updates...</p>
+                  <p className="text-xs text-muted-foreground">Chart will appear after receiving data</p>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-border rounded-lg overflow-hidden">
+                <ChartContainer
+                  config={{
+                    price: {
+                      label: "Price",
+                      color: "hsl(25, 95%, 53%)", // Orange theme
+                    },
+                  } satisfies ChartConfig}
+                  className="h-[280px] w-full"
+                >
+                  <AreaChart
+                    data={priceHistory.map((point, index) => ({
+                      time: new Date(point.time).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                      }),
+                      price: point.price / 100,
+                      timestamp: point.time,
+                      index: index,
+                    }))}
+                    margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <YAxis
+                      hide={true}
+                      domain={['dataMin - 0.5', 'dataMax + 0.5']}
+                    />
+                    <XAxis
+                      dataKey="index"
+                      hide={true}
+                      type="number"
+                      domain={[0, 'dataMax']}
+                    />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="w-[180px]"
+                          labelFormatter={(value) => {
+                            return `Time: ${priceHistory[Number(value)]?.time ? new Date(priceHistory[Number(value)].time).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                            }) : value}`;
+                          }}
+                          formatter={(value: any) => {
+                            return (
+                              <div className="flex items-center justify-between w-full">
+                                <span className="text-muted-foreground">Price:</span>
+                                <span className="font-mono font-bold text-foreground">
+                                  ${Number(value).toFixed(2)}
+                                </span>
+                              </div>
+                            );
+                          }}
+                        />
+                      }
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="price"
+                      stroke="hsl(25, 95%, 53%)"
+                      strokeWidth={2.5}
+                      fill="url(#colorPrice)"
+                      animationDuration={300}
+                      dot={false}
+                      isAnimationActive={true}
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
