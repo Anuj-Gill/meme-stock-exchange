@@ -15,30 +15,30 @@ interface Sponsor {
 }
 
 const SPONSORS: Sponsor[] = [
-  // {
-  //   name: 'Om Alve',
-  //   avatar: '/sponsors/om.webp',
-  //   amount: 10,
-  //   message: 'Love this project!',
-  //   github: 'https://github.com/omalve',
-  //   twitter: 'https://x.com/omalve',
-  // },
-  // {
-  //   name: 'Sahil Shangloo',
-  //   avatar: '/sponsors/sahil.webp',
-  //   amount: 5,
-  //   message: 'Love this project!',
-  //   github: 'https://github.com/sahilshangloo35',
-  //   twitter: 'https://x.com/sahilshangloo35',
-  // },
-  // {
-  //   name: 'Arkan Khan',
-  //   avatar: '/sponsors/arkan.webp',
-  //   amount: 8,
-  //   message: 'Love this project!',
-  //   github: 'https://github.com/arkankhan',
-  //   twitter: 'https://x.com/arkankhan',
-  // },
+  {
+    name: 'Om Alve',
+    avatar: '/sponsors/om.webp',
+    amount: 10,
+    message: 'Love this project!',
+    github: 'https://github.com/Om-Alve',
+    twitter: 'https://x.com/alve_om',
+  },
+  {
+    name: 'Sahil Shangloo',
+    avatar: '/sponsors/sahil.webp',
+    amount: 5,
+    message: 'Love this project!',
+    github: 'https://github.com/SAHILSHANGLOO35',
+    twitter: 'https://x.com/doubleSdotdev',
+  },
+  {
+    name: 'Arkan Khan',
+    avatar: '/sponsors/arkan.webp',
+    amount: 8,
+    message: 'Love this project!',
+    github: 'https://github.com/Arkan-Khan',
+    twitter: 'https://x.com/arkan__khan_',
+  },
   // Add more sponsors as needed
 ];
 
