@@ -17,7 +17,7 @@ import { BrokerService } from './services/broker.service';
 import { MarketDataController } from './apis/market-data/market-data.controller';
 import { BotOrderController } from './apis/bot-order/bot-order.controller';
 import { TradeService } from './services/trade.service';
-import { HoldingsRepository } from './repositories/Holdings.repository';
+import { HoldingsRepository } from './repositories/holdings';
 import { UserController } from './apis/user/user.controller';
 import { UserService } from './apis/user/user.service';
 import { SuggestionsController } from './apis/suggestions/suggestions.controller';

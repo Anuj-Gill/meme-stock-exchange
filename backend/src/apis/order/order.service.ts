@@ -4,7 +4,7 @@ import { OrderDto } from './order.dto';
 import { BrokerService } from 'src/services/broker.service';
 import { symbols } from 'src/common/symbols.config';
 import { OrderType, Role, Side, Symbols } from '@prisma/client';
-import { HoldingsRepository } from 'src/repositories/Holdings.repository';
+import { HoldingsRepository } from 'src/repositories/holdings';
 
 @Injectable()
 export class OrderService {
